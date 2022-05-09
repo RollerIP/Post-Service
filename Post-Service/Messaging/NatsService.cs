@@ -1,19 +1,25 @@
 ﻿using NATS.Client;
 using Newtonsoft.Json;
+using Post_Service.Models;
+using System.Diagnostics;
 using System.Text;
 
 namespace Post_Service.Messaging
 {
     public class NatsService : IMessageService
     {
+        private IConfiguration configuration;
         private IConnection connection = null;
         private IAsyncSubscription subscription = null;
-        private readonly string connectionString = "";
+        private readonly string connectionString = "nats://host.docker.internal:4222";
 
-        public NatsService()
+        public NatsService(IConfiguration configuration)
         {
+            this.configuration = configuration;
             Connect();
             Subscribe("Post-Service");
+
+            Publish<Post>("Post-Service", new Post(new User("A", "B"), "Test", new List<string>()));
         }
 
         public void Connect()
