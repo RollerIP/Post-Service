@@ -11,7 +11,8 @@ namespace Post_Service.Messaging
         private IConfiguration configuration;
         private IConnection connection = null;
         private IAsyncSubscription subscription = null;
-        private readonly string connectionString = "nats://host.docker.internal:4222";
+        private readonly string connectionString = "nats://host.docker.internal:4444";
+        //private readonly string connectionString = "nats://0.0.0.0:4444";
 
         public NatsService(IConfiguration configuration)
         {
@@ -35,9 +36,10 @@ namespace Post_Service.Messaging
                 connection = connectionFactory.CreateConnection(options);
                 Console.WriteLine("Succesfully connected to the NATS server");
             }
-            catch
+            catch (Exception ex)
             {
                 Console.WriteLine("Failed to connect to the NATS server");
+                Console.WriteLine(ex.Message);
             }
         }
 
