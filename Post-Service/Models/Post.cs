@@ -6,9 +6,9 @@ namespace Post_Service.Models
     public class Post
     {
         public int Id { get; set; }
-        public User User { get; private set; }
-        public string Text { get; private set; }
-        public DateTime PostingDate { get; private set; }
+        public User User { get; set; }
+        public string Text { get; set; }
+        public DateTime PostingDate { get; set; }
 
         public Post() { }
 

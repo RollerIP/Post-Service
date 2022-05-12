@@ -17,7 +17,6 @@ namespace Post_Service.Messaging
         {
             this.configuration = configuration;
             Connect();
-            Subscribe("Post-Service");
         }
 
         public void Connect()
@@ -54,15 +53,8 @@ namespace Post_Service.Messaging
             Console.WriteLine("Message sent: " + message);
         }
 
-        public void Subscribe(string target)
+        public void Subscribe(string target, Action<NatsMessage> handler)
         {
-            EventHandler<MsgHandlerEventArgs> handler = (sender, args) =>
-            {
-                // print the message
-                string receivedMessage = Encoding.UTF8.GetString(args.Message.Data);
-                Console.WriteLine("Message received: " + receivedMessage);
-            };
-
             if (connection == null)
             {
                 Console.WriteLine("Unable to subscribe: no connection");
@@ -72,16 +64,23 @@ namespace Post_Service.Messaging
             try
             {
                 subscription = connection.SubscribeAsync(target);
-                if (subscription != null)
-                {
-                    subscription.MessageHandler += handler;
-                    subscription.Start();
-                    Console.WriteLine("Subscribed to " + target);
-                }
-                else
+                if (subscription == null)
                 {
                     Console.WriteLine("Unable to subscribe to" + target);
+                    return;
                 }
+
+                subscription.MessageHandler += (_, args) =>
+                {
+                    string jsonString = Encoding.UTF8.GetString(args.Message.Data);
+                    NatsMessage message = JsonConvert.DeserializeObject<NatsMessage>(jsonString);
+
+                    if (message == null) return;
+
+                    handler(message);
+                };
+
+                subscription.Start();
             }
             catch (Exception ex)
             {

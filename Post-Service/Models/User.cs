@@ -5,8 +5,8 @@ namespace Post_Service.Models
     public class User
     {
         public long Id { get; set; }
-        public string Username { get; private set; }
-        public string AvatarUrl { get; private set; }
+        public string Username { get; set; }
+        public string AvatarUrl { get; set; }
         
         public User() { }
 

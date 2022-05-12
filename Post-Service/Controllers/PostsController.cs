@@ -1,30 +1,35 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Post_Service.Contexts;
+using Post_Service.Messaging;
 using Post_Service.Models;
 
 namespace Post_Service.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PostsController : ApiController
+    public class PostsController : ControllerBase
     {
-        private readonly PostContext _context;
+        private readonly DataContext _context;
+        private IMessageService _messageService;
 
-        public PostsController(PostContext context)
+        public PostsController(DataContext context, IMessageService messageService)
         {
             _context = context;
+            _messageService = messageService;
+
+            _messageService.Subscribe("UserUpdate");
         }
 
         // GET: Posts/GetAll
-        [HttpGet]
+        [HttpGet("getAll")]
         public IEnumerable<Post> GetAll()
         {
             return _context.Posts;
         }
 
         // GET: Posts/Get/5
-        [HttpGet("{id}")]
+        [HttpGet("get/{id}")]
         public Post Get(int? id)
         {
             Post post = _context.Posts.First(x => x.Id == id);
@@ -33,14 +38,13 @@ namespace Post_Service.Controllers
         }
 
         // POST: Posts/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Post post)
+        [HttpPost("create")]
+        public IActionResult Create(Post post)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(post);
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
             return Ok(post);
@@ -49,8 +53,7 @@ namespace Post_Service.Controllers
         // PUT: Posts/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPut("{id}")]
-        [ValidateAntiForgeryToken]
+        [HttpPut("edit/{id}")]
         public IActionResult Edit(int id, [Bind("Id,Text,PostingDate")] Post post)
         {
             if (id != post.Id)
@@ -75,8 +78,7 @@ namespace Post_Service.Controllers
         }
 
         // POST: Posts/Delete/5
-        [HttpDelete("{id}")]
-        [ValidateAntiForgeryToken]
+        [HttpDelete("delete/{id}")]
         public IActionResult DeleteConfirmed(int id)
         {
             var post = _context.Posts.Find(id);
