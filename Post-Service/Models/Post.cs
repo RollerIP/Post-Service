@@ -1,18 +1,22 @@
-﻿namespace Post_Service.Models
+﻿
+using System.ComponentModel.DataAnnotations;
+
+namespace Post_Service.Models
 {
     public class Post
     {
-        public Guid id { get; } 
-        public User user { get; private set; }
-        public string text { get; private set; }
-        public List<string> imageUrls { get; private set; }
+        public int Id { get; set; }
+        public User User { get; private set; }
+        public string Text { get; private set; }
+        public DateTime PostingDate { get; private set; }
 
-        public Post(User user, string text, List<string> imageUrls)
+        public Post() { }
+
+        public Post(User user, string text, DateTime postingDate)
         {
-            this.id = Guid.NewGuid();
-            this.user = user;
-            this.text = text;
-            this.imageUrls = imageUrls;
+            User = user;
+            Text = text;
+            PostingDate = postingDate;
         }
     }
 }

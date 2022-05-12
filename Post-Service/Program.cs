@@ -1,12 +1,14 @@
 using Post_Service.Messaging;
+using Post_Service.Contexts;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-
 builder.Services.AddSingleton<IMessageService, NatsService>();
+builder.Services.AddDbContext<PostContext>(opt =>
+    opt.UseInMemoryDatabase("PostsList"));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

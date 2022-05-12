@@ -12,15 +12,12 @@ namespace Post_Service.Messaging
         private IConnection connection = null;
         private IAsyncSubscription subscription = null;
         private readonly string connectionString = "nats://host.docker.internal:4444";
-        //private readonly string connectionString = "nats://0.0.0.0:4444";
 
         public NatsService(IConfiguration configuration)
         {
             this.configuration = configuration;
             Connect();
             Subscribe("Post-Service");
-
-            Publish<Post>("Post-Service", new Post(new User("A", "B"), "Test", new List<string>()));
         }
 
         public void Connect()

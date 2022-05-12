@@ -1,16 +1,19 @@
-﻿namespace Post_Service.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Post_Service.Models
 {
     public class User
     {
-        public Guid id { get; }
-        public string username { get; private set; }
-        public string avatarUrl { get; private set; }
+        public long Id { get; set; }
+        public string Username { get; private set; }
+        public string AvatarUrl { get; private set; }
+        
+        public User() { }
 
         public User(string username, string avatarUrl)
         {
-            this.id = Guid.NewGuid();
-            this.username = username;
-            this.avatarUrl = avatarUrl;
+            Username = username;
+            AvatarUrl = avatarUrl;
         }
     }
 }
