@@ -2,6 +2,7 @@
 using Post_Service.Contexts;
 using Post_Service.Messaging;
 using Post_Service.Models;
+using System.Data.Entity.Migrations;
 
 namespace Post_Service.Services
 {
@@ -26,7 +27,17 @@ namespace Post_Service.Services
             {
                 DataContext context = scope.ServiceProvider.GetRequiredService<DataContext>();
 
-                context.UpdateRange(users);
+                users.ForEach(user =>
+                {
+                    if (context.Users.Any(x => x.Id == user.Id))
+                    {
+                        context.Users.Update(user);
+                    }
+                    else
+                    {
+                        context.Users.Add(user);
+                    }
+                });
                 context.SaveChanges();
             }
         }

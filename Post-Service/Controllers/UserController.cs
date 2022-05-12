@@ -29,9 +29,9 @@ namespace Post_Service.Controllers
 
         // GET api/<ValuesController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public User Get(int id)
         {
-            return "value";
+            return _context.Users.SingleOrDefault(x => x.Id == id);
         }
 
         // POST api/<ValuesController>
