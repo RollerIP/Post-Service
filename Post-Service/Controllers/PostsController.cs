@@ -17,8 +17,6 @@ namespace Post_Service.Controllers
         {
             _context = context;
             _messageService = messageService;
-
-            _messageService.Subscribe("UserUpdate");
         }
 
         // GET: Posts/GetAll

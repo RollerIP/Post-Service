@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Post_Service.Contexts;
 using Post_Service.Messaging;
 using Post_Service.Models;
+using Post_Service.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,22 +13,11 @@ namespace Post_Service.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private DataContext _context;
-        private IMessageService _messageService;
-        public UserController(IMessageService messageService, DataContext context)
+        private readonly DataContext _context;
+
+        public UserController(DataContext context)
         {
             _context = context;
-            _messageService = messageService;
-
-            _messageService.Subscribe("UserUpdate", OnUserUpdate);
-        }
-
-        private void OnUserUpdate(NatsMessage message)
-        {
-            User user = JsonConvert.DeserializeObject<User>(message.content);
-
-            _context.Update(user);
-            _context.SaveChanges();
         }
 
         // GET: api/<ValuesController>

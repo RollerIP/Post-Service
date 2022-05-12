@@ -8,15 +8,16 @@ namespace Post_Service.Messaging
 {
     public class NatsService : IMessageService
     {
-        private IConfiguration configuration;
         private IConnection connection = null;
         private IAsyncSubscription subscription = null;
         private readonly string connectionString = "nats://host.docker.internal:4444";
 
-        public NatsService(IConfiguration configuration)
+        public NatsService()
         {
-            this.configuration = configuration;
-            Connect();
+            if (connection == null)
+            {
+                Connect();
+            }
         }
 
         public void Connect()
@@ -81,6 +82,7 @@ namespace Post_Service.Messaging
                 };
 
                 subscription.Start();
+                Console.WriteLine("Subscribed to: " + target);
             }
             catch (Exception ex)
             {
