@@ -42,6 +42,12 @@ namespace Post_Service.Messaging
 
         public void Publish<T>(string target, T data)
         {
+            if (connection == null)
+            {
+                Console.WriteLine("Unable to publish: no connection");
+                return;
+            }
+
             string message = JsonConvert.SerializeObject(NatsMessage.Create(target, data));
             connection.Publish(target, Encoding.UTF8.GetBytes(message));
 
@@ -57,11 +63,29 @@ namespace Post_Service.Messaging
                 Console.WriteLine("Message received: " + receivedMessage);
             };
 
-            subscription = connection.SubscribeAsync(target);
-            if (subscription != null)
+            if (connection == null)
             {
-                subscription.MessageHandler += handler;
-                subscription.Start();
+                Console.WriteLine("Unable to subscribe: no connection");
+                return;
+            }
+
+            try
+            {
+                subscription = connection.SubscribeAsync(target);
+                if (subscription != null)
+                {
+                    subscription.MessageHandler += handler;
+                    subscription.Start();
+                    Console.WriteLine("Subscribed to " + target);
+                }
+                else
+                {
+                    Console.WriteLine("Unable to subscribe to" + target);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Unable to subscribe to " + target + ": " + ex.Message);
             }
         }
     }
