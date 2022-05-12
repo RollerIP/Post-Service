@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Post_Service.Contexts;
 using Post_Service.Models;
 
 namespace Post_Service.Controllers
 {
-    public class PostsController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class PostsController : ApiController
     {
         private readonly PostContext _context;
 
@@ -19,36 +16,26 @@ namespace Post_Service.Controllers
             _context = context;
         }
 
-        // GET: Posts
-        public async Task<IActionResult> Index()
+        // GET: Posts/GetAll
+        [HttpGet]
+        public IEnumerable<Post> GetAll()
         {
-              return _context.Posts != null ? 
-                          View(await _context.Posts.ToListAsync()) :
-                          Problem("Entity set 'PostContext.Posts'  is null.");
+            return _context.Posts;
         }
 
-        // GET: Posts/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: Posts/Get/5
+        [HttpGet("{id}")]
+        public Post Get(int? id)
         {
-            if (id == null || _context.Posts == null)
-            {
-                return NotFound();
-            }
+            Post post = _context.Posts.First(x => x.Id == id);
 
-            var post = await _context.Posts
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (post == null)
-            {
-                return NotFound();
-            }
-
-            return View(post);
+            return post;
         }
 
         // POST: Posts/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Text,PostingDate")] Post post)
+        public async Task<IActionResult> Create(Post post)
         {
             if (ModelState.IsValid)
             {
@@ -56,31 +43,15 @@ namespace Post_Service.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(post);
+            return Ok(post);
         }
 
-        // GET: Posts/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.Posts == null)
-            {
-                return NotFound();
-            }
-
-            var post = await _context.Posts.FindAsync(id);
-            if (post == null)
-            {
-                return NotFound();
-            }
-            return View(post);
-        }
-
-        // POST: Posts/Edit/5
+        // PUT: Posts/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPut("{id}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Text,PostingDate")] Post post)
+        public IActionResult Edit(int id, [Bind("Id,Text,PostingDate")] Post post)
         {
             if (id != post.Id)
             {
@@ -92,64 +63,30 @@ namespace Post_Service.Controllers
                 try
                 {
                     _context.Update(post);
-                    await _context.SaveChangesAsync();
+                    _context.SaveChanges();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PostExists(post.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    Console.WriteLine("Couldn't update Post: id " + id);
                 }
-                return RedirectToAction(nameof(Index));
+                return Problem("Couldn't update post");
             }
-            return View(post);
-        }
-
-        // GET: Posts/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Posts == null)
-            {
-                return NotFound();
-            }
-
-            var post = await _context.Posts
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (post == null)
-            {
-                return NotFound();
-            }
-
-            return View(post);
+            return Ok(post);
         }
 
         // POST: Posts/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpDelete("{id}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id)
         {
-            if (_context.Posts == null)
-            {
-                return Problem("Entity set 'PostContext.Posts'  is null.");
-            }
-            var post = await _context.Posts.FindAsync(id);
+            var post = _context.Posts.Find(id);
             if (post != null)
             {
                 _context.Posts.Remove(post);
             }
             
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool PostExists(int id)
-        {
-          return (_context.Posts?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
