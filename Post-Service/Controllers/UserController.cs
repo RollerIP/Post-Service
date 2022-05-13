@@ -20,36 +20,24 @@ namespace Post_Service.Controllers
             _context = context;
         }
 
-        // GET: api/<ValuesController>
-        [HttpGet("Refresh")]
-        public void RefreshUsers()
-        {
-            /// TODO: Button for manually refreshing this service's user table.
-        }
-
-        // GET api/<ValuesController>/5
         [HttpGet("{id}")]
-        public User Get(int id)
+        public IActionResult Get(int id)
         {
-            return _context.Users.SingleOrDefault(x => x.Id == id);
+            User user = _context.Users.SingleOrDefault(x => x.Id == id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(user);
         }
 
-        // POST api/<ValuesController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpGet("getAll")]
+        public IActionResult getAll()
         {
-        }
-
-        // PUT api/<ValuesController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<ValuesController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            List<User> users = _context.Users.ToList();
+            return Ok(users);
         }
     }
 }
