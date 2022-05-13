@@ -36,7 +36,7 @@ namespace Post_Service.Controllers
         [HttpGet("getAll")]
         public IActionResult getAll()
         {
-            List<User> users = _context.Users.ToList();
+            IEnumerable<User> users = _context.Users;
             return Ok(users);
         }
     }

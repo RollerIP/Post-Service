@@ -21,18 +21,24 @@ namespace Post_Service.Controllers
 
         // GET: Posts/GetAll
         [HttpGet("getAll")]
-        public IEnumerable<Post> GetAll()
+        public IActionResult GetAll()
         {
-            return _context.Posts;
+            IEnumerable<Post> posts = _context.Posts;
+            return Ok(posts);
         }
 
         // GET: Posts/Get/5
         [HttpGet("get/{id}")]
-        public Post Get(int? id)
+        public IActionResult Get(int? id)
         {
             Post post = _context.Posts.First(x => x.Id == id);
 
-            return post;
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(post);
         }
 
         // POST: Posts/Create
@@ -41,7 +47,7 @@ namespace Post_Service.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(post);
+                _context.Posts.Add(post);
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
@@ -63,7 +69,7 @@ namespace Post_Service.Controllers
             {
                 try
                 {
-                    _context.Update(post);
+                    _context.Posts.Update(post);
                     _context.SaveChanges();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -86,7 +92,8 @@ namespace Post_Service.Controllers
             }
             
             _context.SaveChanges();
-            return RedirectToAction(nameof(Index));
+
+            return Ok();
         }
     }
 }
