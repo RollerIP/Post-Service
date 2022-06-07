@@ -7,7 +7,7 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["Post-Service/Post-Service.csproj", "Post-Service/"]
+COPY ["Post-Service/Post-Service.csproj", "Post-Service"]
 RUN dotnet restore "Post-Service/Post-Service.csproj"
 COPY . .
 WORKDIR "/src/Post-Service"
