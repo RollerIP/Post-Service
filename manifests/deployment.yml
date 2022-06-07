@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: "kwettercl-e07d"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "kwettercl-e07d"
+  template:
+    metadata:
+      labels:
+        app: "kwettercl-e07d"
+    spec:
+      containers:
+        - name: "kwettercl-e07d"
+          image: "kwetterpostservice.azurecr.io/kwettercl"
+          ports:
+          - containerPort: 80
