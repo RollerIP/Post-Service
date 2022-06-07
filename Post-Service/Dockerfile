@@ -7,16 +7,16 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["Timeline-Service/Timeline-Service.csproj", "Timeline-Service/"]
-RUN dotnet restore "Timeline-Service/Timeline-Service.csproj"
+COPY ["Post-Service/Post-Service.csproj", "Post-Service/"]
+RUN dotnet restore "Post-Service/Post-Service.csproj"
 COPY . .
-WORKDIR "/src/Timeline-Service"
-RUN dotnet build "Timeline-Service.csproj" -c Release -o /app/build
+WORKDIR "/src/Post-Service"
+RUN dotnet build "Post-Service.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Timeline-Service.csproj" -c Release -o /app/publish
+RUN dotnet publish "Post-Service.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Timeline-Service.dll"]
+ENTRYPOINT ["dotnet", "Post-Service.dll"]
