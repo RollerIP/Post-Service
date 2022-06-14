@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: "kwettercluster-147d"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "kwettercluster-147d"
+  template:
+    metadata:
+      labels:
+        app: "kwettercluster-147d"
+    spec:
+      containers:
+        - name: "kwettercluster-147d"
+          image: "kwetterpostservice.azurecr.io/kwettercluster"
+          ports:
+          - containerPort: 80
