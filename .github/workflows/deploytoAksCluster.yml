@@ -1,0 +1,50 @@
+on: [push]
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    
+    - uses: azure/docker-login@v1
+      with:
+        login-server: kwetterpostservice.azurecr.io
+        username: ${{ secrets.acr_kwetterpostservice_username }}
+        password: ${{ secrets.acr_kwetterpostservice_password }}
+    
+    - name: Build and push image to ACR
+      id: build-image
+      run: |
+        docker build "$GITHUB_WORKSPACE/Post-Service" -f  "Post-Service/Dockerfile" -t kwetterpostservice.azurecr.io/kwettercluster:${{ github.sha }} --label dockerfile-path=Post-Service/Dockerfile
+        docker push kwetterpostservice.azurecr.io/kwettercluster:${{ github.sha }}
+    
+    - uses: azure/k8s-set-context@v1
+      with:
+         kubeconfig: ${{ secrets.aks_kwettercluster_kubeConfig }}
+      id: login
+    
+    - name: Create namespace
+      run: |
+        namespacePresent=`kubectl get namespace | grep kwettercluster9c22 | wc -l`
+        if [ $namespacePresent -eq 0 ]
+        then
+            echo `kubectl create namespace kwettercluster9c22`
+        fi
+
+    - uses: azure/k8s-create-secret@v1
+      with:
+        namespace: kwettercluster9c22
+        container-registry-url: kwetterpostservice.azurecr.io
+        container-registry-username: ${{ secrets.acr_kwetterpostservice_username }}
+        container-registry-password: ${{ secrets.acr_kwetterpostservice_password }}
+        secret-name: kwetterclustdockerauth
+       
+    - uses: azure/k8s-deploy@v1.2
+      with:
+        namespace: kwettercluster9c22
+        manifests: |
+          manifests/deployment-1.yml
+          manifests/service-1.yml
+        images: |
+          kwetterpostservice.azurecr.io/kwettercluster:${{ github.sha }}
+        imagepullsecrets: |
+          kwetterclustdockerauth
