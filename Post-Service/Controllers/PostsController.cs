@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Post_Service.Contexts;
 using Post_Service.Messaging;
@@ -20,7 +21,7 @@ namespace Post_Service.Controllers
         }
 
         // GET: Posts/GetAll
-        [HttpGet("getAll")]
+        [HttpGet("getAll"), Authorize]
         public IActionResult GetAll()
         {
             IEnumerable<Post> posts = _context.Posts;
@@ -28,7 +29,7 @@ namespace Post_Service.Controllers
         }
 
         // GET: Posts/Get/5
-        [HttpGet("get/{id}")]
+        [HttpGet("get/{id}"), Authorize]
         public IActionResult Get(int? id)
         {
             Post post = _context.Posts.First(x => x.Id == id);
@@ -42,7 +43,7 @@ namespace Post_Service.Controllers
         }
 
         // POST: Posts/Create
-        [HttpPost("create")]
+        [HttpPost("create"), Authorize]
         public IActionResult Create(Post post)
         {
             if (ModelState.IsValid)
@@ -57,7 +58,7 @@ namespace Post_Service.Controllers
         // PUT: Posts/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPut("edit/{id}")]
+        [HttpPut("edit/{id}"), Authorize]
         public IActionResult Edit(int id, [Bind("Id,Text,PostingDate")] Post post)
         {
             if (id != post.Id)
@@ -82,7 +83,7 @@ namespace Post_Service.Controllers
         }
 
         // POST: Posts/Delete/5
-        [HttpDelete("delete/{id}")]
+        [HttpDelete("delete/{id}"), Authorize]
         public IActionResult DeleteConfirmed(int id)
         {
             var post = _context.Posts.Find(id);
