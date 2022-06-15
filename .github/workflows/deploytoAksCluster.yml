@@ -17,7 +17,7 @@ jobs:
         docker build "$GITHUB_WORKSPACE/Post-Service" -f  "Post-Service/Dockerfile" -t kwetterpostservice.azurecr.io/kwettercluster:${{ github.sha }} --label dockerfile-path=Post-Service/Dockerfile
         docker push kwetterpostservice.azurecr.io/kwettercluster:${{ github.sha }}
     
-    - uses: azure/k8s-set-context@v2.0
+    - uses: azure/k8s-set-context@v1
       with:
          kubeconfig: ${{ secrets.aks_kwettercluster_kubeConfig }}
       id: login
