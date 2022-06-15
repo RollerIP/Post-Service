@@ -5,7 +5,7 @@ jobs:
     steps:
     - uses: actions/checkout@master
     
-    - uses: azure/docker-login@v1.4.3
+    - uses: azure/docker-login@v1
       with:
         login-server: kwetterpostservice.azurecr.io
         username: ${{ secrets.acr_kwetterpostservice_username }}
@@ -30,7 +30,7 @@ jobs:
             echo `kubectl create namespace kwettercluster9c22`
         fi
 
-    - uses: azure/k8s-create-secret@v1.1
+    - uses: azure/k8s-create-secret@v2
       with:
         namespace: kwettercluster9c22
         container-registry-url: kwetterpostservice.azurecr.io
